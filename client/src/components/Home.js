@@ -3,24 +3,24 @@ import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
 import axios from 'axios';
 
 export default class Home extends Component {
-  constructor(props) {
+constructor(props){
     super(props);
 
-    this.state = {
-      posts: []
+    this.state={
+      posts:[]
     };
 
   }
 
-  componentDidMount() {
+  componentDidMount(){
     this.retrievePosts();
   }
 
-  retrievePosts() {
-    axios.get("/posts").then(res => {
-      if (res.data.success) {
+  retrievePosts(){
+    axios.get("/posts").then(res =>{
+      if(res.data.success){
         this.setState({
-          posts: res.data.existingPosts
+          posts:res.data.existingPosts
         });
 
         console.log(this.state.posts);
@@ -28,42 +28,42 @@ export default class Home extends Component {
     });
   }
 
-  onDelete = (id) => {
-    axios.delete(/post/delete / ${ id }).then((res) => {
+  onDelete = (id) =>{
+    axios.delete(`/post/delete/${id}`).then((res) =>{
       alert("Delete Successfully");
       this.retrievePosts();
     })
   }
 
-  filterData(posts, searchKey) {
+  filterData(posts,searchKey){
 
-    const result = posts.filter((post) =>
-      post.topic.toLowerCase().includes(searchKey) ||
-      post.description.toLowerCase().includes(searchKey) ||
-      post.postCategory.toLowerCase().includes(searchKey) ||
-      post.topic.toUpperCase().includes(searchKey) ||
-      post.description.toUpperCase().includes(searchKey) ||
-      post.postCategory.toUpperCase().includes(searchKey)
-    )
+  const result = posts.filter((post) =>
+   post.topic.toLowerCase().includes(searchKey) ||
+   post.description.toLowerCase().includes(searchKey) ||
+   post.postCategory.toLowerCase().includes(searchKey) ||
+   post.topic.toUpperCase().includes(searchKey) ||
+   post.description.toUpperCase().includes(searchKey) ||
+   post.postCategory.toUpperCase().includes(searchKey)
+  )
 
-    this.setState({ posts: result })
+  this.setState({posts:result})
 
   }
 
-  handleSearchArea = (e) => {
+  handleSearchArea = (e) =>{
 
     const searchKey = e.currentTarget.value;
 
-    axios.get("/posts").then(res => {
-      if (res.data.success) {
+    axios.get("/posts").then(res =>{
+      if(res.data.success){
+        
+        this.filterData(res.data.existingPosts,searchKey)
 
-        this.filterData(res.data.existingPosts, searchKey)
-
-      }
+      }    
     });
   }
 
-
+  
 
   render() {
     return (
@@ -74,11 +74,11 @@ export default class Home extends Component {
           </div>
           <div className="col-lg-3 mt-2 mb-2">
             <input
-              className="form-control"
-              type="search"
-              placeholder="Search"
-              name="searchQuery"
-              onChange={this.handleSearchArea}>
+            className="form-control"
+            type="search"
+            placeholder="Search"
+            name="searchQuery"
+            onChange={this.handleSearchArea}>
             </input>
           </div>
         </div>
@@ -93,35 +93,35 @@ export default class Home extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.posts.map((posts, index) => (
+            {this.state.posts.map((posts,index) =>(
               <tr key={index}>
                 <th scope="row">{index+1}</th>
                 <td>
-                    { <a href={/post/${posts._id}} style={{textDecoration:'none'}}>
+                    { <a href={`/post/${posts._id}`} style={{textDecoration:'none'}}>
                     {posts.topic}
                     </a> }
                 </td>
                 <td>{posts.description}</td>
                 <td>{posts.postCategory}</td>
                 <td>
-                  <a className="btn btn-warning" href={/edit/${posts._id}}>
+                  <a className="btn btn-warning" href={`/edit/${posts._id}`}>
                     <i className="fas fa-edit"></i>&nbsp;Edit
                   </a>
-              & nbsp;
-            <a className="btn btn-danger" href="#" onClick={() => this.onDelete(posts._id)}>
-              <i className="fa fa-trash"></i>&nbsp;Delete
-            </a>
-          </td>
-        </tr>
+                  &nbsp;
+                  <a className="btn btn-danger" href="#" onClick={() =>this.onDelete(posts._id)}>
+                    <i className="fa fa-trash"></i>&nbsp;Delete
+                  </a>
+                </td>
+              </tr>
             ))}
-      </tbody>
-        </table >
+          </tbody>
+        </table>
 
 
-      <button className="btn btn-success"><a href="/add" style={{ textDecoration: 'none', color: 'white' }}>Create New Post</a></button>
+        <button className="btn btn-success"><a href="/add" style={{textDecoration:'none',color:'white'}}>Create New Post</a></button>
 
 
-      </div >
+      </div>
     )
   }
 };
