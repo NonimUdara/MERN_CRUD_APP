@@ -4,15 +4,18 @@ const postSchema = new mongoose.Schema({
 
     topic:{
         type:String,
-        required:true
+        required:true,
+        default:'topic not provided'
     },
     description:{
         type:String,
-        required:true
+        required:true,
+        default:'description not provided'
     },
     postCategory:{
         type:String,
-        required:true
+        required:true,
+        default:'category not provided'
     }
 
 });
