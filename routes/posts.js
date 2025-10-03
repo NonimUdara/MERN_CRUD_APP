@@ -1,93 +1,33 @@
 const express = require('express');
-const Posts = require('../models/posts');
-
 const router = express.Router();
 
-//save posts
+// Import controller functions
+const {
+    createPost,
+    getAllPosts,
+    getPostById,
+    updatePost,
+    deletePost
+} = require('../controllers/posts');
 
-router.post('/post/save',(req,res)=>{
+// @route   POST /post/save
+// @desc    Create a new post
+router.post('/post/save', createPost);
 
-    let newPost = new Posts(req.body);
+// @route   GET /posts
+// @desc    Get all posts
+router.get('/posts', getAllPosts);
 
-    newPost.save((err) =>{
-        if(err){
-            return res.status(400).json({
-                error:err
-            });
-        }
-        return res.status(200).json({
-            success:"Posts saved successfully"
-        });
-    });
-});
+// @route   GET /post/:id
+// @desc    Get a specific post by ID
+router.get('/post/:id', getPostById);
 
-// get posts
+// @route   PUT /post/update/:id
+// @desc    Update a post by ID
+router.put('/post/update/:id', updatePost);
 
-router.get('/posts',(req,res) =>{
-    Posts.find().exec((err,posts) =>{
-        if(err){
-            return res.status(400).json({
-                error:err
-            });
-        }
-        return res.status(200).json({
-            success:true,
-            existingPosts:posts
-        });
-    });
-});
-
-//get a specific post
-
-router.get("/post/:id",(req,res) =>{
-
-    let postId = req.params.id;
-
-    Posts.findById(postId,(err,post) =>{
-        if(err){
-            return res.status(400).json({success:false, err});
-        }
-
-        return res.status(200).json({
-            success:true,
-            post
-        });
-    });
-});
-
-//update posts
-
-router.put('/post/update/:id',(req,res)=>{
-    Posts.findByIdAndUpdate(
-        req.params.id,
-        {
-            $set:req.body
-        },
-        (err,post)=>{
-            if(err){
-                return res.status(400).json({error:err});
-            }
-
-            return res.status(200).json({
-                success:"Updated Successfully"
-            });
-        }
-    );
-});
-
-//delete post
-
-router.delete('/post/delete/:id',(req,res) =>{
-    Posts.findByIdAndRemove(req.params.id).exec((err,deletedPost) =>{
-        
-        if(err) return res.status(400).json({
-            message:"Delete Unsuccessfull",err
-        });
-
-        return res.json({
-            message:"Delete Successfull",deletedPost
-        });
-    });
-});
+// @route   DELETE /post/delete/:id
+// @desc    Delete a post by ID
+router.delete('/post/delete/:id', deletePost);
 
 module.exports = router;
