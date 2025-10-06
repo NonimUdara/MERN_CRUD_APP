@@ -1,96 +1,113 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+import { motion } from "framer-motion";
+import { Send } from "lucide-react";
 
-export default class CreatePost extends Component {
+export default function CreatePost() {
+  const [formData, setFormData] = useState({
+    topic: "",
+    description: "",
+    postCategory: "",
+  });
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      topic: "",
-      description: "",
-      postCategory: ""
-    }
-  }
-
-  handleInputChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-    this.setState({
-      ...this.state,
-      [name]: value
-    })
-  }
-
-  onSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const { topic, description, postCategory } = this.state;
-
-    const data = {
-      topic: topic,
-      description: description,
-      postCategory: postCategory
-    }
-
-    console.log(data)
-
-    axios.post("/post/save", data).then((res) => {
+    try {
+      const res = await axios.post("/post/save", formData);
       if (res.data.success) {
-        this.setState(
-          {
-            topic: "",
-            description: "",
-            postCategory: ""
-          }
-        )
+        setFormData({ topic: "", description: "", postCategory: "" });
       }
-    })
+    } catch (error) {
+      console.error("Error saving post:", error);
+    }
+  };
 
-  }
+  return (
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="card shadow-lg p-4 w-100"
+        style={{ maxWidth: "600px", borderRadius: "16px" }}
+      >
+        <h2 className="text-center mb-4 fw-bold text-primary">
+          📝 Create New Post
+        </h2>
 
-  render() {
-    return (
-      <div className="col-md-8 mt-4 mx-auto">
-        <h1 className="h3 mb-3 font-weight-normal">Create new post</h1>
-        <form className="needs-validation" noValidate>
-          <div className="form-group" style={{ marginBottom: '15px' }}>
-            <label style={{ marginBottom: '5px' }}>Topic</label>
-            <input type="text"
+        <form onSubmit={handleSubmit}>
+          {/* Topic */}
+          <div className="mb-3">
+            <label htmlFor="topic" className="form-label fw-semibold">
+              Topic
+            </label>
+            <input
+              type="text"
               className="form-control"
+              id="topic"
               name="topic"
-              placeholder="Enter Topic"
-              value={this.state.topic}
-              onChange={this.handleInputChange} />
+              placeholder="Enter your topic..."
+              value={formData.topic}
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          <div className="form-group" style={{ marginBottom: '15px' }}>
-            <label style={{ marginBottom: '5px' }}>Description</label>
-            <input type="text"
+          {/* Description */}
+          <div className="mb-3">
+            <label htmlFor="description" className="form-label fw-semibold">
+              Description
+            </label>
+            <textarea
               className="form-control"
+              id="description"
               name="description"
-              placeholder="Enter Description"
-              value={this.state.description}
-              onChange={this.handleInputChange} />
+              placeholder="Write a short description..."
+              rows="4"
+              value={formData.description}
+              onChange={handleChange}
+              required
+            ></textarea>
           </div>
 
-          <div className="form-group" style={{ marginBottom: '15px' }}>
-            <label style={{ marginBottom: '5px' }}>Post Category</label>
-            <input type="text"
+          {/* Post Category */}
+          <div className="mb-3">
+            <label htmlFor="postCategory" className="form-label fw-semibold">
+              Post Category
+            </label>
+            <input
+              type="text"
               className="form-control"
+              id="postCategory"
               name="postCategory"
-              placeholder="Enter Post Category"
-              value={this.state.postCategory}
-              onChange={this.handleInputChange} />
+              placeholder="e.g. Technology, Lifestyle..."
+              value={formData.postCategory}
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          <button className="btn btn-success" type="submit" style={{ marginTop: '15px' }} onClick={this.onSubmit}>
-            <i className="far fa-check-square"></i>
-            &nbsp; Save
-          </button>
-
+          {/* Submit Button */}
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            type="submit"
+            className="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 fw-semibold py-2"
+            style={{ borderRadius: "10px" }}
+          >
+            <Send size={18} />
+            Publish Post
+          </motion.button>
         </form>
-      </div>
-    )
-  }
+      </motion.div>
+    </div>
+  );
 }

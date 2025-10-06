@@ -7,6 +7,8 @@
     "@testing-library/react": "^13.0.1",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.26.1",
+    "framer-motion": "^12.23.22",
+    "lucide-react": "^0.544.0",
     "react": "^18.0.0",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
@@ -37,6 +39,6 @@
       "last 1 safari version"
     ]
   },
-
+  
   "proxy" :"http://localhost:8000"
 }
