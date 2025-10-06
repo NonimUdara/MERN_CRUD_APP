@@ -1,122 +1,149 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { motion } from "framer-motion";
+import { Send, ArrowLeft } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
 
- class EditPost extends Component {
+export default function EditPost() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    topic: "",
+    description: "",
+    postCategory: "",
+  });
+  const [loading, setLoading] = useState(false);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      topic: "",
-      description: "",
-      postCategory: ""
-    }
-  }
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const res = await axios.get(`/post/${id}`);
+        if (res.data.success) {
+          setFormData({
+            topic: res.data.post.topic,
+            description: res.data.post.description,
+            postCategory: res.data.post.postCategory,
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching post:", err);
+        toast.error("Failed to load post", { position: "top-right" });
+      }
+    };
+    fetchPost();
+  }, [id]);
 
-  handleInputChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-    this.setState({
-      ...this.state,
-      [name]: value
-    })
-  }
-
-  onSubmit = (e) => {
-    
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const { topic, description, postCategory } = this.state;
-    const { id } = this.props.params;
-    const data = {
-      topic: topic,
-      description: description,
-      postCategory: postCategory
+    try {
+      const res = await axios.put(`/post/update/${id}`, formData);
+      if (res.data.success) {
+        toast.success("Post updated successfully!", { position: "top-right" });
+        setTimeout(() => {
+          navigate("/"); // redirect after short delay to let toast show
+        }, 1000);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update post", { position: "top-right" });
+    } finally {
+      setLoading(false);
     }
+  };
 
-   
+  return (
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+      <ToastContainer />
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="card shadow-lg p-4 w-100"
+        style={{ maxWidth: "600px", borderRadius: "16px" }}
+      >
+        {/* Back Button */}
+        <button
+          className="btn btn-outline-primary mb-3 d-flex align-items-center gap-2"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft size={18} /> Back
+        </button>
 
-    axios.put("/post/update/"+id, data).then((res) => {
-      console.log(data)
-      if (res.data.success) {
-        alert("Post Updated Successfully");
-        this.setState(
-          {
-            topic: "",
-            description: "",
-            postCategory: ""
-          }
-        )
-      }
-    })
+        <h2 className="text-center mb-4 fw-bold text-primary">✏️ Edit Post</h2>
 
-  }
-
-  componentDidMount() {
-
-    const { id } = this.props.params;
-
-    axios.get("/post/"+id).then((res) => {
-      if (res.data.success) {
-        this.setState({
-          topic:res.data.post.topic,
-          description:res.data.post.description,
-          postCategory:res.data.post.postCategory
-        });
-
-        console.log(this.state.post);
-      }
-    });
-  }
-
-  render() {
-    return (
-      <div className="col-md-8 mt-4 mx-auto">
-        <h1 className="h3 mb-3 font-weight-normal">Edit post</h1>
-        <form className="needs-validation" noValidate>
-          <div className="form-group" style={{ marginBottom: '15px' }}>
-            <label style={{ marginBottom: '5px' }}>Topic</label>
-            <input type="text"
+        <form onSubmit={handleSubmit}>
+          {/* Topic */}
+          <div className="mb-3">
+            <label htmlFor="topic" className="form-label fw-semibold">
+              Topic
+            </label>
+            <input
+              type="text"
               className="form-control"
+              id="topic"
               name="topic"
-              placeholder="Enter Topic"
-              value={this.state.topic}
-              onChange={this.handleInputChange} />
+              placeholder="Enter topic..."
+              value={formData.topic}
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          <div className="form-group" style={{ marginBottom: '15px' }}>
-            <label style={{ marginBottom: '5px' }}>Description</label>
-            <input type="text"
+          {/* Description */}
+          <div className="mb-3">
+            <label htmlFor="description" className="form-label fw-semibold">
+              Description
+            </label>
+            <textarea
               className="form-control"
+              id="description"
               name="description"
-              placeholder="Enter Description"
-              value={this.state.description}
-              onChange={this.handleInputChange} />
+              placeholder="Write a short description..."
+              rows="4"
+              value={formData.description}
+              onChange={handleChange}
+              required
+            ></textarea>
           </div>
 
-          <div className="form-group" style={{ marginBottom: '15px' }}>
-            <label style={{ marginBottom: '5px' }}>Post Category</label>
-            <input type="text"
+          {/* Post Category */}
+          <div className="mb-3">
+            <label htmlFor="postCategory" className="form-label fw-semibold">
+              Post Category
+            </label>
+            <input
+              type="text"
               className="form-control"
+              id="postCategory"
               name="postCategory"
-              placeholder="Enter Post Category"
-              value={this.state.postCategory}
-              onChange={this.handleInputChange} />
+              placeholder="e.g. Technology, Lifestyle..."
+              value={formData.postCategory}
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          <button className="btn btn-success" type="submit" style={{ marginTop: '15px' }} onClick={this.onSubmit}>
-            <i className="far fa-check-square"></i>
-            &nbsp; Update
-          </button>
-
+          {/* Submit Button */}
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            type="submit"
+            className="btn btn-success w-100 d-flex align-items-center justify-content-center gap-2 fw-semibold py-2"
+            style={{ borderRadius: "10px" }}
+          >
+            <Send size={18} /> Update Post
+          </motion.button>
         </form>
-      </div>
-    )
-  }
+      </motion.div>
+    </div>
+  );
 }
-export default (props) => (
-  <EditPost
-      {...props}
-      params={useParams()}
-  />
-);
