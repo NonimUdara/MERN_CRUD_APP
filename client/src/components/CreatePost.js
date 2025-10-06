@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function CreatePost() {
   const [formData, setFormData] = useState({
