@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function CreatePost() {
   const [formData, setFormData] = useState({
@@ -9,6 +13,8 @@ export default function CreatePost() {
     description: "",
     postCategory: "",
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,8 +30,20 @@ export default function CreatePost() {
       const res = await axios.post("/post/save", formData);
       if (res.data.success) {
         setFormData({ topic: "", description: "", postCategory: "" });
+
+        // ✅ Show success toast
+        toast.success("Post submitted successfully!", {
+          position: "top-right",
+          autoClose: 1500,
+        });
+
+        // Redirect after toast duration
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
       }
     } catch (error) {
+      toast.error("Failed to submit post!", { position: "top-right" });
       console.error("Error saving post:", error);
     }
   };
@@ -108,6 +126,9 @@ export default function CreatePost() {
           </motion.button>
         </form>
       </motion.div>
+
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 }
