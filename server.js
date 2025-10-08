@@ -16,8 +16,8 @@ app.use(cors());
 app.use(postRoutes);
 
 const PORT = 8000;
-// const DB_URL = 'mongodb+srv://Udara:udara123@mernapp.ypcrk.mongodb.net/mernCrud?retryWrites=true&w=majority'
-const DB_URL = 'mongodb+srv://Udara:123@webauth.ecg7w.mongodb.net/wewe?retryWrites=true&w=majority&appName=webAuth'
+const DB_URL = 'mongodb+srv://Udara:udara123@mernapp.ypcrk.mongodb.net/mernCrud?retryWrites=true&w=majority'
+// const DB_URL = 'mongodb+srv://Udara:123@webauth.ecg7w.mongodb.net/wewe?retryWrites=true&w=majority&appName=webAuth'
 
 
 mongoose.connect(DB_URL,{
